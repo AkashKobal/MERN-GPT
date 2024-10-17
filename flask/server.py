@@ -1,12 +1,18 @@
 import openai
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from dotenv import dotenv_values
+
 
 app = Flask(__name__)
 CORS(app)
 
-API_KEY = "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"
-openai.api_key = API_KEY
+# Load API key from .env file
+temp = dotenv_values(".env")
+OPENAI_API_KEY = temp["OPENAI_API_KEY"] 
+
+API_KEY = dotenv.config()
+openai.api_key = OPENAI_API_KEY
 
 @app.route('/chatBot', methods=['POST', 'GET'])
 def postData():
