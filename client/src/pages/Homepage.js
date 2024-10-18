@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import DescriptionRounded from "@mui/icons-material/DescriptionRounded";
 import FormatAlignLeftOutlined from "@mui/icons-material/FormatAlignLeftOutlined";
 import ChatRounded from "@mui/icons-material/ChatRounded";
+import CodeIcon from '@mui/icons-material/Code';
+import ImageSearchIcon from '@mui/icons-material/ImageSearch';
+
 const Homepage = () => {
   const navigate = useNavigate();
   return (
@@ -105,10 +108,10 @@ const Homepage = () => {
         </Box>
         <Box p={2}>
           <Typography variant="h4" mb={2} fontWeight="bold">
-            Javascript Converter
+          Code Explanation 
           </Typography>
           <Card
-            onClick={() => navigate("/js-converter")}
+            onClick={() => navigate("/code-explain")}
             sx={{
               boxShadow: 2,
               borderRadius: 5,
@@ -122,15 +125,15 @@ const Homepage = () => {
               },
             }}
           >
-            <ChatRounded
+            <CodeIcon
               sx={{ fontSize: 80, color: "primary.main", mt: 2, ml: 2 }}
             />
             <Stack p={3} pt={0}>
               <Typography fontWeight="bold" variant="h5">
-                JS CONVERTER
+                Code Explanation 
               </Typography>
               <Typography variant="h6">
-                Trasnlate english to javascript code
+                Know your code.
               </Typography>
             </Stack>
           </Card>
@@ -154,7 +157,7 @@ const Homepage = () => {
               },
             }}
           >
-            <ChatRounded
+            <ImageSearchIcon
               sx={{ fontSize: 80, color: "primary.main", mt: 2, ml: 2 }}
             />
             <Stack p={3} pt={0}>

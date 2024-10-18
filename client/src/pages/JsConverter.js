@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -20,31 +20,45 @@ const JsConverter = () => {
   //media
   const isNotMobile = useMediaQuery("(min-width: 1000px)");
   // states
-  const [text, settext] = useState("");
-  const [code, setCode] = useState("");
+  const [text, setText] = useState("");
+  const [response, setResponse] = useState("");
   const [error, setError] = useState("");
+  const [data, setData] = useState({});
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
 
+  const fetchData = async () => {
+    try {
+      const responseFromBackend = await fetch('http://127.0.0.1:5000/code-explain');
+      const jsonData = await responseFromBackend.json();
+      setData(jsonData);
+    } catch (error) {
+      console.log('Error', error);
+    }
+  };
   //register ctrl
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/v1/openai/js-converter", {
-        text,
-      });
-      console.log(data);
-      setCode(data);
+        const data = await axios.post("http://127.0.0.1:5000/code-explain", { text });
+        console.log(data); // Log the entire response for debugging
+        setResponse(data.data.response); // Access the 'response' field from data.data
+        setText(""); // Clear the text field after submission
     } catch (err) {
-      console.log(error);
-      if (err.response.data.error) {
-        setError(err.response.data.error);
-      } else if (err.message) {
-        setError(err.message);
-      }
-      setTimeout(() => {
-        setError("");
-      }, 5000);
+        console.log(err);
+        if (err.response && err.response.data && err.response.data.error) {
+            setError(err.response.data.error);
+        } else if (err.message) {
+            setError(err.message);
+        }
+        setTimeout(() => {
+            setError("");
+        }, 5000);
     }
-  };
+};
+
   return (
     <Box
       width={isNotMobile ? "40%" : "80%"}
@@ -60,7 +74,7 @@ const JsConverter = () => {
         </Alert>
       </Collapse>
       <form onSubmit={handleSubmit}>
-        <Typography variant="h3">JS Converter</Typography>
+        <Typography variant="h3">Explain code</Typography>
 
         <TextField
           placeholder="add your text"
@@ -71,7 +85,7 @@ const JsConverter = () => {
           fullWidth
           value={text}
           onChange={(e) => {
-            settext(e.target.value);
+            setText(e.target.value);
           }}
         />
 
@@ -82,14 +96,14 @@ const JsConverter = () => {
           size="large"
           sx={{ color: "white", mt: 2 }}
         >
-          Convert
+          Explain
         </Button>
         <Typography mt={2}>
           not this tool ? <Link to="/">GO BACK</Link>
         </Typography>
       </form>
 
-      {code ? (
+      {response ? (
         <Card
           sx={{
             mt: 4,
@@ -103,7 +117,7 @@ const JsConverter = () => {
           }}
         >
           <pre>
-            <Typography p={2}>{code}</Typography>
+            <Typography p={2}>{response}</Typography>
           </pre>
         </Card>
       ) : (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -20,29 +20,45 @@ const Summary = () => {
   //media
   const isNotMobile = useMediaQuery("(min-width: 1000px)");
   // states
-  const [text, settext] = useState("");
-  const [summary, setSummary] = useState("");
+  const [text, setText] = useState("");
+  const [response, setResponse] = useState("");
   const [error, setError] = useState("");
+  const [data, setData] = useState({});
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
 
+  const fetchData = async () => {
+    try {
+      const responseFromBackend = await fetch('http://127.0.0.1:5000/summary');
+      const jsonData = await responseFromBackend.json();
+      setData(jsonData);
+    } catch (error) {
+      console.log('Error', error);
+    }
+  };
   //register ctrl
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/v1/openai/summary", { text });
-      console.log(data);
-      setSummary(data);
+        const data = await axios.post("http://127.0.0.1:5000/summary", { text });
+        console.log(data); // Log the entire response for debugging
+        setResponse(data.data.response); // Access the 'response' field from data.data
+        setText(""); // Clear the text field after submission
     } catch (err) {
-      console.log(error);
-      if (err.response.data.error) {
-        setError(err.response.data.error);
-      } else if (err.message) {
-        setError(err.message);
-      }
-      setTimeout(() => {
-        setError("");
-      }, 5000);
+        console.log(err);
+        if (err.response && err.response.data && err.response.data.error) {
+            setError(err.response.data.error);
+        } else if (err.message) {
+            setError(err.message);
+        }
+        setTimeout(() => {
+            setError("");
+        }, 5000);
     }
-  };
+};
+
   return (
     <Box
       width={isNotMobile ? "40%" : "80%"}
@@ -69,7 +85,7 @@ const Summary = () => {
           fullWidth
           value={text}
           onChange={(e) => {
-            settext(e.target.value);
+            setText(e.target.value);
           }}
         />
 
@@ -87,7 +103,7 @@ const Summary = () => {
         </Typography>
       </form>
 
-      {summary ? (
+      {response ? (
         <Card
           sx={{
             mt: 4,
@@ -99,7 +115,7 @@ const Summary = () => {
             bgcolor: "background.default",
           }}
         >
-          <Typography p={2}>{summary}</Typography>
+          <Typography p={2}>{response}</Typography>
         </Card>
       ) : (
         <Card
