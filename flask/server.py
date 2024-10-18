@@ -11,8 +11,6 @@ temp = dotenv_values(".env")
 OPENAI_API_KEY = temp["OPENAI_API_KEY"] 
 openai.api_key = OPENAI_API_KEY  
 
-# OPENAI_API_KEY = "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"
-
 @app.route('/chatBot', methods=['POST', 'GET'])
 def postData():
     if request.method == 'GET':
